@@ -153,12 +153,26 @@ export async function exec(bail) {
 		}
 	}
 
+	return {
+		total,
+		code,
+		done,
+		skips,
+		duration: timer()
+	};
+}
+
+export function writeResults({
+	total,
+	code,
+	done,
+	skips,
+	duration
+}) {
 	write('\n  Total:     ' + total);
 	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
 	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
-	write('\n  Duration:  ' + timer() + '\n\n');
-
-	if (isNode) process.exit(code);
+	write('\n  Duration:  ' + duration + '\n\n');
 }
 
-isCLI || Promise.resolve().then(exec);
+isCLI || Promise.resolve().then(exec).then(writeResults);
